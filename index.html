@@ -1,0 +1,1930 @@
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GANMI DEVTECH · 60-Month Financial Model</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:   #1F3864;
+    --navy2:  #0D1B2E;
+    --navy3:  #162847;
+    --gold:   #C9A84C;
+    --gold2:  #E8C26A;
+    --offwhite: #F0F4FB;
+    --muted:  #7A8BA8;
+    --border: rgba(255,255,255,0.08);
+    --green:  #2ECC71;
+    --red:    #E74C3C;
+    --ext:    #A78BFA;   /* purple for external revenue */
+    --panel:  rgba(255,255,255,0.04);
+    --panel2: rgba(255,255,255,0.07);
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Inter', system-ui, sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 14px; }
+  body {
+    background: var(--navy2);
+    color: var(--offwhite);
+    font-family: var(--sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(135deg, #0A1628 0%, #1F3864 60%, #162847 100%);
+    border-bottom: 1px solid var(--gold);
+    padding: 0 28px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 58px;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .brand-badge {
+    background: var(--gold); color: var(--navy2);
+    font-family: var(--mono); font-size: 10px; font-weight: 700;
+    letter-spacing: 2px; padding: 4px 10px; border-radius: 3px;
+  }
+  .brand-name { font-size: 15px; font-weight: 600; letter-spacing: 0.3px; }
+  .brand-sub  { font-size: 11px; color: var(--muted); margin-top: 1px; }
+  .header-right { display: flex; align-items: center; gap: 14px; }
+  .scenario-tabs { display: flex; gap: 4px; }
+  .sc-tab {
+    padding: 6px 14px; border-radius: 5px; border: 1px solid var(--border);
+    font-size: 11px; font-weight: 600; cursor: pointer;
+    transition: all 0.2s; background: none; color: var(--muted);
+    font-family: var(--sans); letter-spacing: 0.5px; text-transform: uppercase;
+  }
+  .sc-tab.active { background: var(--navy); color: var(--gold); border-color: var(--gold); }
+  .sc-tab:hover:not(.active) { color: var(--offwhite); background: var(--panel2); border-color: rgba(255,255,255,0.15); }
+  .dl-btn {
+    background: var(--gold); color: var(--navy2); border: none; border-radius: 5px;
+    padding: 8px 16px; font-size: 11px; font-weight: 700;
+    cursor: pointer; letter-spacing: 0.5px; font-family: var(--sans);
+    transition: background 0.2s; white-space: nowrap;
+  }
+  .dl-btn:hover { background: var(--gold2); }
+
+  /* ── LAYOUT ── */
+  .layout {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    min-height: calc(100vh - 58px);
+  }
+
+  /* ── LEFT: CONTROLS ── */
+  .controls {
+    background: var(--navy3);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 20px 20px 60px;
+  }
+  .ctrl-section { margin-bottom: 22px; }
+  .ctrl-section-title {
+    font-size: 9px; font-weight: 700; letter-spacing: 2.5px;
+    text-transform: uppercase; color: var(--gold);
+    padding-bottom: 8px; margin-bottom: 12px;
+    border-bottom: 1px solid rgba(201,168,76,0.22);
+  }
+  .ctrl-section-title.ext-title { color: var(--ext); border-bottom-color: rgba(167,139,250,0.3); }
+  .ctrl-row { margin-bottom: 14px; }
+  .ctrl-label {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 6px;
+  }
+  .ctrl-name { font-size: 12px; color: var(--offwhite); font-weight: 400; line-height: 1.4; }
+  .ctrl-current {
+    font-family: var(--mono); font-size: 12px; font-weight: 600;
+    color: var(--gold); min-width: 88px; text-align: right; flex-shrink: 0;
+  }
+  .ctrl-current.ext { color: var(--ext); }
+  input[type=range] {
+    -webkit-appearance: none; appearance: none;
+    width: 100%; height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px; outline: none; cursor: pointer;
+  }
+  input[type=range].ext-range::-webkit-slider-thumb { background: var(--ext); box-shadow: 0 0 6px rgba(167,139,250,0.5); }
+  input[type=range].ext-range::-moz-range-thumb { background: var(--ext); }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--gold); cursor: pointer;
+    box-shadow: 0 0 6px rgba(201,168,76,0.4);
+    transition: transform 0.1s;
+  }
+  input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+  input[type=range]::-moz-range-thumb {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--gold); cursor: pointer; border: none;
+  }
+  .range-bounds {
+    display: flex; justify-content: space-between;
+    font-size: 10px; color: var(--muted); margin-top: 3px;
+  }
+  .toggle-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 14px;
+  }
+  .toggle-label { font-size: 12px; color: var(--offwhite); line-height: 1.4; }
+  .toggle { position: relative; width: 38px; height: 20px; cursor: pointer; flex-shrink: 0; margin-left: 12px; }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle-track {
+    position: absolute; inset: 0; background: rgba(255,255,255,0.12);
+    border-radius: 10px; transition: background 0.2s;
+  }
+  .toggle input:checked + .toggle-track { background: var(--gold); }
+  .toggle-thumb {
+    position: absolute; top: 2px; left: 2px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: white; transition: transform 0.2s; pointer-events: none;
+  }
+  .toggle input:checked ~ .toggle-thumb { transform: translateX(18px); }
+
+  /* Year 1 monthly revenue grid */
+  .y1-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 7px;
+    margin-top: 10px;
+  }
+  .y1-cell { display: flex; flex-direction: column; gap: 3px; }
+  .y1-cell label {
+    font-size: 10px; color: var(--muted); font-weight: 500;
+    letter-spacing: 0.3px;
+  }
+  .y1-cell input[type=number] {
+    width: 100%;
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    color: var(--gold);
+    font-family: var(--mono);
+    font-size: 12px; font-weight: 600;
+    padding: 7px 9px;
+    outline: none;
+    transition: border-color 0.15s;
+    -moz-appearance: textfield;
+  }
+  .y1-cell input[type=number]::-webkit-inner-spin-button,
+  .y1-cell input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+  .y1-cell input[type=number]:focus {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.07);
+  }
+  .y1-total-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 10px; padding: 8px 10px;
+    background: rgba(201,168,76,0.08);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 6px;
+  }
+  .y1-total-label { font-size: 11px; color: var(--muted); }
+  .y1-total-val   { font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--gold); }
+  .y1-quickset {
+    margin-top: 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .y1-quickset label { font-size: 11px; color: var(--muted); white-space: nowrap; }
+  .y1-quickset input[type=range] { flex: 1; }
+  .y1-quickset span { font-family: var(--mono); font-size: 11px; color: var(--muted); white-space: nowrap; min-width: 52px; text-align: right; }
+  .ext-box {
+    background: rgba(167,139,250,0.06);
+    border: 1px solid rgba(167,139,250,0.2);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 22px;
+  }
+  .ext-box .ctrl-section-title { color: var(--ext); border-bottom-color: rgba(167,139,250,0.25); }
+
+  /* ── RIGHT: RESULTS ── */
+  .results { overflow-y: auto; padding: 20px 24px 60px; }
+  .results-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 20px; gap: 12px;
+  }
+  .results-title { font-size: 14px; font-weight: 600; }
+  .results-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .badge {
+    font-size: 10px; font-weight: 700; letter-spacing: 1px;
+    padding: 5px 12px; border-radius: 4px; text-transform: uppercase;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .badge.base { background: rgba(46,83,149,0.3); color: #7BA7E8; border: 1px solid #2E5395; }
+  .badge.cons { background: rgba(123,79,0,0.3);  color: #F0B94A; border: 1px solid #7B4F00; }
+  .badge.upsi { background: rgba(27,94,32,0.3);  color: #6FCF7F; border: 1px solid #1B5E20; }
+
+  /* KPI grid */
+  .kpi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 16px; }
+  .kpi {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 8px; padding: 13px 15px; transition: border-color 0.25s;
+  }
+  .kpi:hover { border-color: rgba(201,168,76,0.3); }
+  .kpi-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+  .kpi-val   { font-family: var(--mono); font-size: 19px; font-weight: 700; letter-spacing: -0.5px; transition: color 0.25s; }
+  .kpi-sub   { font-size: 10px; color: var(--muted); margin-top: 4px; }
+  .pos { color: var(--green); }
+  .neg { color: var(--red); }
+  .neu { color: var(--offwhite); }
+  .gold { color: var(--gold); }
+  .purple { color: var(--ext); }
+
+  /* External revenue impact card */
+  .ext-impact {
+    background: rgba(167,139,250,0.06);
+    border: 1px solid rgba(167,139,250,0.2);
+    border-radius: 8px; padding: 14px 18px;
+    margin-bottom: 16px;
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+  .ei-item .ei-label { font-size: 10px; color: rgba(167,139,250,0.7); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .ei-item .ei-val   { font-family: var(--mono); font-size: 17px; font-weight: 700; color: var(--ext); }
+  .ei-item .ei-sub   { font-size: 10px; color: var(--muted); margin-top: 3px; }
+
+  /* Breakeven row */
+  .be-row {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px 16px; margin-bottom: 14px;
+  }
+  .be-icon { font-size: 18px; flex-shrink: 0; }
+  .be-text { flex: 1; }
+  .be-label { font-size: 11px; color: var(--muted); margin-bottom: 2px; }
+  .be-val   { font-family: var(--mono); font-size: 15px; font-weight: 700; }
+  .be-vol   { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+
+  /* Year table */
+  .section-title {
+    font-size: 10px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--muted);
+    margin: 18px 0 10px;
+  }
+  .yr-table { width: 100%; border-collapse: collapse; margin-bottom: 18px; }
+  .yr-table th {
+    font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--muted); padding: 8px 10px; text-align: right;
+    border-bottom: 1px solid var(--border);
+  }
+  .yr-table th:first-child { text-align: left; }
+  .yr-table td {
+    font-family: var(--mono); font-size: 12px;
+    padding: 9px 10px; text-align: right;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.15s;
+  }
+  .yr-table td:first-child { font-family: var(--sans); font-size: 12px; color: var(--muted); text-align: left; }
+  .yr-table tr:hover td { background: var(--panel2); }
+  .yr-table .tot-row td { border-top: 1px solid var(--border); font-weight: 700; color: var(--gold); padding-top: 11px; }
+
+  /* ── Expandable year rows ── */
+  .yr-row { cursor: pointer; }
+  .yr-row:hover td { background: var(--panel2); }
+  .expand-caret {
+    display: inline-block; font-style: normal;
+    margin-right: 6px; font-size: 9px;
+    transition: transform 0.2s ease; opacity: 0.5;
+    vertical-align: middle;
+  }
+  .yr-row.open .expand-caret { transform: rotate(90deg); opacity: 1; }
+  .yr-row.open td:first-child { color: var(--gold); }
+
+  /* Monthly drill-down rows — hidden by default */
+  .mo-group { display: none; }
+  .mo-group.open { display: table-row-group; }
+  .mo-row td {
+    font-size: 11px; padding: 5px 10px;
+    background: rgba(255,255,255,0.02);
+    border-bottom: 1px solid rgba(255,255,255,0.02);
+  }
+  .mo-row td:first-child {
+    font-family: var(--sans); font-size: 11px;
+    color: var(--muted); padding-left: 30px;
+  }
+  .mo-row:last-child td { border-bottom: 2px solid rgba(255,255,255,0.07); }
+  .mo-row:hover td { background: rgba(255,255,255,0.05); }
+  .mo-row.warn-mo td { background: rgba(231,76,60,0.06); }
+  .mo-row.warn-mo td:first-child { color: var(--red); }
+  .mo-row.r2-mo td { background: rgba(201,168,76,0.06); }
+  .mo-row.r2-mo td:first-child { color: var(--gold); }
+  .mo-dot {
+    display: inline-block; width: 5px; height: 5px;
+    border-radius: 50%; margin-right: 7px; vertical-align: middle;
+  }
+  .mo-badge {
+    font-size: 9px; margin-left: 4px;
+    padding: 1px 4px; border-radius: 3px;
+    vertical-align: middle; font-family: var(--sans);
+  }
+  /* Stagger animation for month rows */
+  @keyframes moSlide {
+    from { opacity:0; transform:translateY(-3px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  .mo-group.open .mo-row {
+    animation: moSlide 0.15s ease both;
+  }
+  .mo-group.open .mo-row:nth-child(1)  { animation-delay:0.00s }
+  .mo-group.open .mo-row:nth-child(2)  { animation-delay:0.03s }
+  .mo-group.open .mo-row:nth-child(3)  { animation-delay:0.05s }
+  .mo-group.open .mo-row:nth-child(4)  { animation-delay:0.07s }
+  .mo-group.open .mo-row:nth-child(5)  { animation-delay:0.09s }
+  .mo-group.open .mo-row:nth-child(6)  { animation-delay:0.11s }
+  .mo-group.open .mo-row:nth-child(7)  { animation-delay:0.13s }
+  .mo-group.open .mo-row:nth-child(8)  { animation-delay:0.15s }
+  .mo-group.open .mo-row:nth-child(9)  { animation-delay:0.17s }
+  .mo-group.open .mo-row:nth-child(10) { animation-delay:0.19s }
+  .mo-group.open .mo-row:nth-child(11) { animation-delay:0.21s }
+  .mo-group.open .mo-row:nth-child(12) { animation-delay:0.23s }
+
+  /* Charts */
+  .chart-wrap {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 8px; padding: 14px 18px; margin-bottom: 14px;
+  }
+  .chart-title { font-size: 11px; color: var(--muted); margin-bottom: 10px; letter-spacing: 0.3px; }
+  canvas { width: 100% !important; display: block; }
+
+  /* Sensitivity grid */
+  .sens-grid { display: grid; gap: 2px; margin-bottom: 20px; }
+  .sg-cell {
+    padding: 7px 8px; border-radius: 3px;
+    font-family: var(--mono); font-size: 11px; text-align: center;
+  }
+  .sg-hdr { background: var(--navy); color: var(--muted); font-size: 10px; font-weight: 600; }
+  .sg-lbl { background: var(--panel); color: var(--muted); font-size: 10px; text-align: left; padding-left: 10px; }
+  .sg-pos { background: rgba(46,204,113,0.14); color: var(--green); }
+  .sg-neg { background: rgba(231,76,60,0.12);  color: var(--red); }
+  .sg-hl  { outline: 2px solid var(--gold); outline-offset: -1px; }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: 1fr; }
+    .kpi-grid { grid-template-columns: repeat(2,1fr); }
+    .ext-impact { grid-template-columns: 1fr 1fr; }
+    header { height: auto; flex-wrap: wrap; gap: 8px; padding: 10px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <span class="brand-badge">GANMI</span>
+    <div>
+      <div class="brand-name">DEVTECH · 60-Month Pro Forma</div>
+      <div class="brand-sub">10% GC Markup Model · Jul 2026 – Jun 2031</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="scenario-tabs">
+      <button class="sc-tab active" onclick="setScenario('base',this)">Base</button>
+      <button class="sc-tab" onclick="setScenario('cons',this)">Conservative</button>
+      <button class="sc-tab" onclick="setScenario('upside',this)">Upside</button>
+    </div>
+    <button class="dl-btn" onclick="downloadHTML()">↓ Download HTML</button>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- ══ LEFT: CONTROLS ══ -->
+  <div class="controls">
+
+    <!-- MARKUP -->
+    <div class="ctrl-section">
+      <div class="ctrl-section-title">Markup &amp; Margin</div>
+      <div class="ctrl-row">
+        <div class="ctrl-label">
+          <span class="ctrl-name">GC Markup on Hard Costs</span>
+          <span class="ctrl-current" id="v-markup">10.0%</span>
+        </div>
+        <input type="range" id="s-markup" min="5" max="20" step="0.5" value="10" oninput="upd('markup',this.value)">
+        <div class="range-bounds"><span>5%</span><span>20%</span></div>
+      </div>
+    </div>
+
+    <!-- OPENING CAPITAL -->
+    <div class="ctrl-section">
+      <div class="ctrl-section-title">Opening Capital</div>
+      <div class="ctrl-row">
+        <div class="ctrl-label">
+          <span class="ctrl-name">Ganmi Equity Investment at Signing</span>
+          <span class="ctrl-current" id="v-invest">$100,000</span>
+        </div>
+        <input type="range" id="s-invest" min="0" max="500000" step="10000" value="100000" oninput="upd('invest',this.value)">
+        <div class="range-bounds"><span>$0</span><span>$500K</span></div>
+      </div>
+      <div class="ctrl-row">
+        <div class="ctrl-label">
+          <span class="ctrl-name">S&amp;P Carryover Cash</span>
+          <span class="ctrl-current" id="v-sp">$20,000</span>
+        </div>
+        <input type="range" id="s-sp" min="0" max="100000" step="5000" value="20000" oninput="upd('sp',this.value)">
+        <div class="range-bounds"><span>$0</span><span>$100K</span></div>
+      </div>
+    </div>
+
+    <!-- OPERATOR COMP -->
+    <div class="ctrl-section">
+      <div class="ctrl-section-title">Operator Compensation</div>
+      <div class="ctrl-row">
+        <div class="ctrl-label">
+          <span class="ctrl-name">Base Salary (each: Samuel &amp; Percy)</span>
+          <span class="ctrl-current" id="v-opbase">$120,000</span>
+        </div>
+        <input type="range" id="s-opbase" min="60000" max="180000" step="5000" value="120000" oninput="upd('opbase',this.value)">
+        <div class="range-bounds"><span>$60K</span><span>$180K</span></div>
+      </div>
+      <div class="toggle-row">
+        <span class="toggle-label">Use Loaded Comp ($150K incentive ceiling)</span>
+        <label class="toggle">
+          <input type="checkbox" id="t-loaded" onchange="upd('loaded',this.checked)">
+          <div class="toggle-track"></div>
+          <div class="toggle-thumb"></div>
+        </label>
+      </div>
+      <div class="ctrl-row">
+        <div class="ctrl-label">
+          <span class="ctrl-name">Payroll Burden Rate (W-2)</span>
+          <span class="ctrl-current" id="v-burden">12.0%</span>
+        </div>
+        <input type="range" id="s-burden" min="8" max="20" step="0.5" value="12" oninput="upd('burden',this.value)">
+        <div class="range-bounds"><span>8%</span><span>20%</span></div>
+      </div>
+    </div>
+
+    <!-- GANMI PROJECT VOLUME -->
+    <div class="ctrl-section">
+      <div class="ctrl-section-title">Ganmi Project Volume</div>
+
+      <!-- Year 1: individual month inputs -->
+      <div style="margin-bottom:14px">
+        <div style="font-size:12px;color:var(--offwhite);margin-bottom:4px;font-weight:500">
+          Year 1 Revenue — Month by Month
+          <span style="font-size:10px;color:var(--muted);font-weight:400;margin-left:6px">Jul–Dec 2026</span>
+        </div>
+        <div class="y1-grid" id="y1-grid"><div class="y1-cell"><label>Jul 2026</label>
+      <input type="number" id="y1mo-0" min="0" max="10000000" step="10000" value="500000" oninput="setY1Month(0,this.value)"></div><div class="y1-cell"><label>Aug 2026</label>
+      <input type="number" id="y1mo-1" min="0" max="10000000" step="10000" value="500000" oninput="setY1Month(1,this.value)"></div><div class="y1-cell"><label>Sep 2026</label>
+      <input type="number" id="y1mo-2" min="0" max="10000000" step="10000" value="500000" oninput="setY1Month(2,this.value)"></div><div class="y1-cell"><label>Oct 2026</label>
+      <input type="number" id="y1mo-3" min="0" max="10000000" step="10000" value="500000" oninput="setY1Month(3,this.value)"></div><div class="y1-cell"><label>Nov 2026</label>
+      <input type="number" id="y1mo-4" min="0" max="10000000" step="10000" value="500000" oninput="setY1Month(4,this.value)"></div><div class="y1-cell"><label>Dec 2026</label>
+      <input type="number" id="y1mo-5" min="0" max="10000000" step="10000" value="500000" oninput="setY1Month(5,this.value)"></div></div>
+        <div class="y1-total-row">
+          <span class="y1-total-label">Year 1 Total</span>
+          <span class="y1-total-val" id="y1-total">$2,700,000</span>
+        </div>
+        <div class="y1-quickset">
+          <label>Set all equal:</label>
+          <input type="range" id="s-y1quick" min="0" max="2000000" step="50000" value="500000" oninput="setY1Quick(this.value)">
+          <span id="v-y1quick">$500K/mo</span>
+        </div>
+      </div>
+
+      <!-- Year 2+ unchanged -->
+      <div class="ctrl-row">
+        <div class="ctrl-label">
+          <span class="ctrl-name">Year 2+ Annual Volume</span>
+          <span class="ctrl-current" id="v-y2rev">$6,000,000</span>
+        </div>
+        <input type="range" id="s-y2rev" min="1000000" max="15000000" step="250000" value="6000000" oninput="upd('y2rev',this.value)">
+        <div class="range-bounds"><span>$1M</span><span>$15M</span></div>
+      </div>
+    </div>
+
+    <!-- EXTERNAL JOBS — standalone highlighted box -->
+    <div class="ext-box">
+      <div class="ctrl-section-title ext-title">External Jobs (Non-Ganmi)</div>
+      <div class="ctrl-row">
+        <div class="ctrl-label">
+          <span class="ctrl-name">Annual profit from outside GC work<br>
+            <span style="font-size:10px;color:var(--muted)">Goes straight to bottom line — already net of costs</span>
+          </span>
+          <span class="ctrl-current ext" id="v-extprofit">$0</span>
+        </div>
+        <input type="range" class="ext-range" id="s-extprofit" min="0" max="10000000" step="100000" value="0" oninput="upd('extprofit',this.value)">
+        <div class="range-bounds"><span>$0</span><span>$10M/yr</span></div>
+      </div>
+      <div class="ctrl-row">
+        <div class="ctrl-label">
+          <span class="ctrl-name">Start month for external revenue</span>
+          <span class="ctrl-current ext" id="v-extstart">Month 1</span>
+        </div>
+        <input type="range" class="ext-range" id="s-extstart" min="1" max="24" step="1" value="1" oninput="upd('extstart',this.value)">
+        <div class="range-bounds"><span>Mo 1</span><span>Mo 24</span></div>
+      </div>
+      <div class="toggle-row" style="margin-bottom:0">
+        <span class="toggle-label" style="color:rgba(167,139,250,0.9)">Ramp up over 12 months (start at 0, reach full by start+12)</span>
+        <label class="toggle">
+          <input type="checkbox" id="t-extramp" onchange="upd('extramp',this.checked)">
+          <div class="toggle-track" style=""></div>
+          <div class="toggle-thumb"></div>
+        </label>
+      </div>
+    </div>
+
+    <!-- ROUND 2 -->
+    <div class="ctrl-section">
+      <div class="ctrl-section-title">Round 2 Equity Raise</div>
+      <div class="ctrl-row">
+        <div class="ctrl-label">
+          <span class="ctrl-name">Raise Amount</span>
+          <span class="ctrl-current" id="v-r2amt">$1,000,000</span>
+        </div>
+        <input type="range" id="s-r2amt" min="0" max="3000000" step="100000" value="1000000" oninput="upd('r2amt',this.value)">
+        <div class="range-bounds"><span>$0</span><span>$3M</span></div>
+      </div>
+      <div class="ctrl-row">
+        <div class="ctrl-label">
+          <span class="ctrl-name">Close Month (#)</span>
+          <span class="ctrl-current" id="v-r2mo">Month 15</span>
+        </div>
+        <input type="range" id="s-r2mo" min="1" max="48" step="1" value="15" oninput="upd('r2mo',this.value)">
+        <div class="range-bounds"><span>Mo 1</span><span>Mo 48</span></div>
+      </div>
+    </div>
+
+    <!-- SOFTWARE DEV -->
+    <div class="ctrl-section">
+      <div class="ctrl-section-title">Software Development</div>
+      <div class="ctrl-row">
+        <div class="ctrl-label">
+          <span class="ctrl-name">Monthly Burn (activates at Round 2 close)</span>
+          <span class="ctrl-current" id="v-swburn">$4,000</span>
+        </div>
+        <input type="range" id="s-swburn" min="0" max="50000" step="1000" value="4000" oninput="upd('swburn',this.value)">
+        <div class="range-bounds"><span>$0</span><span>$50K/mo</span></div>
+      </div>
+    </div>
+
+    <!-- GROWTH HIRES -->
+    <div class="ctrl-section">
+      <div class="ctrl-section-title">Growth Hires</div>
+      <div class="ctrl-row">
+        <div class="ctrl-label">
+          <span class="ctrl-name">PM Hire Month (0 = not yet triggered)</span>
+          <span class="ctrl-current" id="v-pmmo">Off</span>
+        </div>
+        <input type="range" id="s-pmmo" min="0" max="60" step="1" value="0" oninput="upd('pmmo',this.value)">
+        <div class="range-bounds"><span>Off</span><span>Mo 60</span></div>
+      </div>
+      <div class="ctrl-row">
+        <div class="ctrl-label">
+          <span class="ctrl-name">PM Annual Salary</span>
+          <span class="ctrl-current" id="v-pmsal">$85,000</span>
+        </div>
+        <input type="range" id="s-pmsal" min="50000" max="150000" step="5000" value="85000" oninput="upd('pmsal',this.value)">
+        <div class="range-bounds"><span>$50K</span><span>$150K</span></div>
+      </div>
+      <div class="ctrl-row">
+        <div class="ctrl-label">
+          <span class="ctrl-name">Estimator NOI Trigger (annualized)</span>
+          <span class="ctrl-current" id="v-esttrig">$200,000</span>
+        </div>
+        <input type="range" id="s-esttrig" min="50000" max="500000" step="25000" value="200000" oninput="upd('esttrig',this.value)">
+        <div class="range-bounds"><span>$50K</span><span>$500K</span></div>
+      </div>
+      <div class="ctrl-row">
+        <div class="ctrl-label">
+          <span class="ctrl-name">Estimator Annual Salary</span>
+          <span class="ctrl-current" id="v-estsal">$60,000</span>
+        </div>
+        <input type="range" id="s-estsal" min="40000" max="120000" step="5000" value="60000" oninput="upd('estsal',this.value)">
+        <div class="range-bounds"><span>$40K</span><span>$120K</span></div>
+      </div>
+    </div>
+
+    <!-- CASH FLOW -->
+    <div class="ctrl-section">
+      <div class="ctrl-section-title">Cash Flow Mechanics</div>
+      <div class="ctrl-row">
+        <div class="ctrl-label">
+          <span class="ctrl-name">Cash Warning Threshold</span>
+          <span class="ctrl-current" id="v-warnth">$60,000</span>
+        </div>
+        <input type="range" id="s-warnth" min="10000" max="200000" step="5000" value="60000" oninput="upd('warnth',this.value)">
+        <div class="range-bounds"><span>$10K</span><span>$200K</span></div>
+      </div>
+      <div class="ctrl-row">
+        <div class="ctrl-label">
+          <span class="ctrl-name">Quarterly Distribution % of NOI</span>
+          <span class="ctrl-current" id="v-distpct">10.0%</span>
+        </div>
+        <input type="range" id="s-distpct" min="0" max="50" step="2.5" value="10" oninput="upd('distpct',this.value)">
+        <div class="range-bounds"><span>0%</span><span>50%</span></div>
+      </div>
+    </div>
+
+    <!-- OVERHEAD ADJUSTMENTS -->
+    <div class="ctrl-section">
+      <div class="ctrl-section-title">Overhead Line Adjustments</div>
+      <div class="ctrl-row">
+        <div class="ctrl-label">
+          <span class="ctrl-name">Victoria — 1099 Admin (annual cap)</span>
+          <span class="ctrl-current" id="v-vic">$20,000</span>
+        </div>
+        <input type="range" id="s-vic" min="0" max="60000" step="2500" value="20000" oninput="upd('vic',this.value)">
+        <div class="range-bounds"><span>$0</span><span>$60K</span></div>
+      </div>
+      <div class="ctrl-row">
+        <div class="ctrl-label">
+          <span class="ctrl-name">Office Lease (annual)</span>
+          <span class="ctrl-current" id="v-office">$7,800</span>
+        </div>
+        <input type="range" id="s-office" min="0" max="30000" step="600" value="7800" oninput="upd('office',this.value)">
+        <div class="range-bounds"><span>$0</span><span>$30K</span></div>
+      </div>
+    </div>
+
+  </div><!-- end controls -->
+
+  <!-- ══ RIGHT: RESULTS ══ -->
+  <div class="results">
+
+    <div class="results-header">
+      <div>
+        <div class="results-title" id="res-title">Base Case Projections</div>
+        <div class="results-sub" id="res-sub">$3M Y1 · $6M/yr · Round 2 Month 15</div>
+      </div>
+      <span class="badge base" id="sc-badge">BASE</span>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-label">Annual Breakeven</div>
+        <div class="kpi-val gold" id="kpi-be">$3.93M</div>
+        <div class="kpi-sub">Ganmi volume to cover overhead</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Year 1 NOI</div>
+        <div class="kpi-val pos" id="kpi-y1noi">$66,859</div>
+        <div class="kpi-sub">Jul–Dec 2026 (6 months)</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Year 1 Ending Cash</div>
+        <div class="kpi-val pos" id="kpi-y1cash">$183,721</div>
+        <div class="kpi-sub">Dec 2026 balance</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">5-Year Cumulative NOI</div>
+        <div class="kpi-val pos" id="kpi-5ynoi">$730,040</div>
+        <div class="kpi-sub">All sources · Jul 2026–Jun 2031</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Jun 2031 Cash</div>
+        <div class="kpi-val pos" id="kpi-endcash">$1,825,063</div>
+        <div class="kpi-sub">End of 60-month window</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Cash Warnings</div>
+        <div class="kpi-val pos" id="kpi-warns">✓ None</div>
+        <div class="kpi-sub">Months below threshold</div>
+      </div>
+    </div>
+
+    <!-- External jobs impact strip — hidden when $0 -->
+    <div class="ext-impact" id="ext-impact" style="display:none">
+      <div class="ei-item">
+        <div class="ei-label">External Profit / Yr</div>
+        <div class="ei-val" id="ei-annual">—</div>
+        <div class="ei-sub">Net, straight to bottom line</div>
+      </div>
+      <div class="ei-item">
+        <div class="ei-label">5-Year External Total</div>
+        <div class="ei-val" id="ei-5yr">—</div>
+        <div class="ei-sub">Cumulative over 60 months</div>
+      </div>
+      <div class="ei-item">
+        <div class="ei-label">NOI Lift vs Ganmi-Only</div>
+        <div class="ei-val" id="ei-lift">—</div>
+        <div class="ei-sub">Cumulative improvement</div>
+      </div>
+    </div>
+
+    <!-- Breakeven -->
+    <div class="be-row">
+      <div class="be-icon" id="be-icon">✅</div>
+      <div class="be-text">
+        <div class="be-label">Ganmi volume needed to break even at current overhead</div>
+        <div class="be-val" id="be-val">$3,929,112</div>
+      </div>
+      <div style="text-align:right">
+        <div class="be-label">Current annualized Ganmi pace</div>
+        <div class="be-vol" id="be-vol">$6,000,000/yr</div>
+      </div>
+    </div>
+
+    <!-- Year table -->
+    <div class="section-title">Year-by-Year Summary <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:10px;color:var(--muted)">· click any row to expand monthly detail</span></div>
+    <table class="yr-table" id="yr-table">
+      <thead>
+        <tr>
+          <th>Period</th>
+          <th>Ganmi Rev</th>
+          <th>GP (10%)</th>
+          <th>Ext. Profit</th>
+          <th>Overhead</th>
+          <th>Total NOI</th>
+          <th>R2 In</th>
+          <th>End Cash</th>
+        </tr>
+      </thead>
+    <tbody><tr class="yr-row" data-yr="1">
+      <td><i class="expand-caret">▶</i>Year 1
+        <span style="color:var(--muted);font-size:10px;margin-left:4px">Jul–Dec 2026</span></td>
+      <td style="color:var(--offwhite)">$2,700,000</td>
+      <td style="color:var(--green)">$245,455</td>
+      <td style="color:var(--muted)">—</td>
+      <td style="color:var(--red)">(178,596)</td>
+      <td class="pos" style="font-weight:600">$66,859</td>
+      <td style="color:var(--muted)">—</td>
+      <td class="pos" style="font-weight:600">$183,721</td></tr></tbody><tbody class="mo-group"><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Jul 2026</td>
+        <td style="color:var(--offwhite)">$200,000</td>
+        <td style="color:var(--green)">$18,182</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(29,766)</td>
+        <td class="neg">($11,584)</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$108,416</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Aug 2026</td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(29,766)</td>
+        <td class="pos">$15,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$124,104</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Sep 2026</td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(29,766)</td>
+        <td class="pos">$15,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$138,224</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Oct 2026</td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(29,766)</td>
+        <td class="pos">$15,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$153,913</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Nov 2026</td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(29,766)</td>
+        <td class="pos">$15,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$169,601</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Dec 2026</td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(29,766)</td>
+        <td class="pos">$15,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$183,721</td></tr></tbody><tbody><tr class="yr-row" data-yr="2">
+      <td><i class="expand-caret">▶</i>Year 2
+        <span style="color:var(--muted);font-size:10px;margin-left:4px">Jan–Dec 2027</span></td>
+      <td style="color:var(--offwhite)">$6,000,000</td>
+      <td style="color:var(--green)">$545,455</td>
+      <td style="color:var(--muted)">—</td>
+      <td style="color:var(--red)">(373,192)</td>
+      <td class="pos" style="font-weight:600">$172,263</td>
+      <td style="color:var(--gold)">$1,000,000</td>
+      <td class="pos" style="font-weight:600">$1,350,508</td></tr></tbody><tbody class="mo-group"><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Jan 2027</td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(29,766)</td>
+        <td class="pos">$15,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$199,409</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Feb 2027</td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(29,766)</td>
+        <td class="pos">$15,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$215,098</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Mar 2027</td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(29,766)</td>
+        <td class="pos">$15,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$229,218</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Apr 2027</td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(29,766)</td>
+        <td class="pos">$15,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$244,906</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>May 2027</td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(29,766)</td>
+        <td class="pos">$15,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$260,595</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Jun 2027</td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(29,766)</td>
+        <td class="pos">$15,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$274,714</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Jul 2027</td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(29,766)</td>
+        <td class="pos">$15,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$290,403</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Aug 2027</td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(29,766)</td>
+        <td class="pos">$15,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$306,091</td></tr><tr class="mo-row r2-mo">
+        <td><span class="mo-dot" style="background:var(--gold)"></span>Sep 2027<span class="mo-badge" style="color:var(--gold);background:rgba(201,168,76,0.15)">R2↓</span><span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--gold)">$1,000,000</td>
+        <td class="pos" style="font-weight:600">$1,316,611</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Oct 2027<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,328,300</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Nov 2027<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,339,988</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Dec 2027<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,350,508</td></tr></tbody><tbody><tr class="yr-row" data-yr="3">
+      <td><i class="expand-caret">▶</i>Year 3
+        <span style="color:var(--muted);font-size:10px;margin-left:4px">Jan–Dec 2028</span></td>
+      <td style="color:var(--offwhite)">$6,000,000</td>
+      <td style="color:var(--green)">$545,455</td>
+      <td style="color:var(--muted)">—</td>
+      <td style="color:var(--red)">(405,192)</td>
+      <td class="pos" style="font-weight:600">$140,263</td>
+      <td style="color:var(--muted)">—</td>
+      <td class="pos" style="font-weight:600">$1,486,095</td></tr></tbody><tbody class="mo-group"><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Jan 2028<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,362,197</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Feb 2028<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,373,885</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Mar 2028<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,384,405</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Apr 2028<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,396,093</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>May 2028<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,407,782</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Jun 2028<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,418,302</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Jul 2028<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,429,990</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Aug 2028<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,441,679</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Sep 2028<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,452,198</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Oct 2028<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,463,887</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Nov 2028<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,475,575</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Dec 2028<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,486,095</td></tr></tbody><tbody><tr class="yr-row" data-yr="4">
+      <td><i class="expand-caret">▶</i>Year 4
+        <span style="color:var(--muted);font-size:10px;margin-left:4px">Jan–Dec 2029</span></td>
+      <td style="color:var(--offwhite)">$6,000,000</td>
+      <td style="color:var(--green)">$545,455</td>
+      <td style="color:var(--muted)">—</td>
+      <td style="color:var(--red)">(405,192)</td>
+      <td class="pos" style="font-weight:600">$140,263</td>
+      <td style="color:var(--muted)">—</td>
+      <td class="pos" style="font-weight:600">$1,621,682</td></tr></tbody><tbody class="mo-group"><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Jan 2029<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,497,784</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Feb 2029<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,509,472</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Mar 2029<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,519,992</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Apr 2029<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,531,680</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>May 2029<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,543,369</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Jun 2029<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,553,889</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Jul 2029<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,565,577</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Aug 2029<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,577,266</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Sep 2029<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,587,785</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Oct 2029<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,599,474</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Nov 2029<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,611,163</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Dec 2029<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,621,682</td></tr></tbody><tbody><tr class="yr-row" data-yr="5">
+      <td><i class="expand-caret">▶</i>Year 5
+        <span style="color:var(--muted);font-size:10px;margin-left:4px">Jan–Dec 2030</span></td>
+      <td style="color:var(--offwhite)">$6,000,000</td>
+      <td style="color:var(--green)">$545,455</td>
+      <td style="color:var(--muted)">—</td>
+      <td style="color:var(--red)">(405,192)</td>
+      <td class="pos" style="font-weight:600">$140,263</td>
+      <td style="color:var(--muted)">—</td>
+      <td class="pos" style="font-weight:600">$1,757,269</td></tr></tbody><tbody class="mo-group"><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Jan 2030<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,633,371</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Feb 2030<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,645,059</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Mar 2030<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,655,579</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Apr 2030<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,667,268</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>May 2030<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,678,956</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Jun 2030<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,689,476</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Jul 2030<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,701,164</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Aug 2030<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,712,853</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Sep 2030<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,723,373</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Oct 2030<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,735,061</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Nov 2030<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,746,750</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Dec 2030<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,757,269</td></tr></tbody><tbody><tr class="yr-row" data-yr="6">
+      <td><i class="expand-caret">▶</i>Year 6
+        <span style="color:var(--muted);font-size:10px;margin-left:4px">Jan–Jun 2031</span></td>
+      <td style="color:var(--offwhite)">$3,000,000</td>
+      <td style="color:var(--green)">$272,727</td>
+      <td style="color:var(--muted)">—</td>
+      <td style="color:var(--red)">(202,596)</td>
+      <td class="pos" style="font-weight:600">$70,131</td>
+      <td style="color:var(--muted)">—</td>
+      <td class="pos" style="font-weight:600">$1,825,063</td></tr></tbody><tbody class="mo-group"><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Jan 2031<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,768,958</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Feb 2031<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,780,646</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Mar 2031<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,791,166</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Apr 2031<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,802,855</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>May 2031<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,814,543</td></tr><tr class="mo-row">
+        <td><span class="mo-dot" style="background:rgba(255,255,255,0.25)"></span>Jun 2031<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span></td>
+        <td style="color:var(--offwhite)">$500,000</td>
+        <td style="color:var(--green)">$45,455</td>
+        <td style="color:var(--muted)">—</td>
+        <td style="color:var(--red)">(33,766)</td>
+        <td class="pos">$11,689</td>
+        <td style="color:var(--muted)">—</td>
+        <td class="pos" style="font-weight:600">$1,825,063</td></tr></tbody><tbody><tr class="tot-row">
+    <td style="padding-left:20px">60-Month Total</td>
+    <td>$29,700,000</td>
+    <td>$2,700,000</td>
+    <td style="color:var(--ext)">—</td>
+    <td>(1,969,960)</td>
+    <td>$730,040</td>
+    <td>$1,000,000</td>
+    <td>$1,825,063</td></tr></tbody></table>
+
+    <!-- Charts -->
+    <div class="section-title">Monthly Cash Balance — 60 Months</div>
+    <div class="chart-wrap">
+      <div class="chart-title">Month-end cash · Red dashes = warning threshold · Gold line = Round 2 close · Purple bars = external profit months</div>
+      <canvas id="cashChart" height="260" width="1972" style="width: 986px; height: 130px;"></canvas>
+    </div>
+
+    <div class="section-title">Monthly Net Operating Income — All Sources</div>
+    <div class="chart-wrap">
+      <div class="chart-title">Green = Ganmi markup profit · Purple = External job profit · Red = loss months</div>
+      <canvas id="noiChart" height="200" width="1972" style="width: 986px; height: 100px;"></canvas>
+    </div>
+
+    <!-- Sensitivity -->
+    <div class="section-title">NOI Sensitivity: Markup × Ganmi Annual Volume</div>
+    <div style="font-size:10px;color:var(--muted);margin-bottom:8px">
+      Based on core overhead only. External job profit adds on top of every cell.
+      Current markup highlighted in gold.
+    </div>
+    <div class="sens-grid" id="sens-grid" style="grid-template-columns: auto repeat(5, 1fr);"><div class="sg-cell sg-hdr">Vol / Markup →</div><div class="sg-cell sg-hdr">7%</div><div class="sg-cell sg-hdr">8%</div><div class="sg-cell sg-hdr sg-hl">10%</div><div class="sg-cell sg-hdr">12%</div><div class="sg-cell sg-hdr">15%</div><div class="sg-cell sg-lbl">$3M/yr</div><div class="sg-cell sg-neg">($161K)</div><div class="sg-cell sg-neg">($135K)</div><div class="sg-cell sg-neg sg-hl">($84.5K)</div><div class="sg-cell sg-neg">($35.8K)</div><div class="sg-cell sg-pos">+$34.1K</div><div class="sg-cell sg-lbl">$4M/yr</div><div class="sg-cell sg-neg">($95.5K)</div><div class="sg-cell sg-neg">($60.9K)</div><div class="sg-cell sg-pos sg-hl">+$6.4K</div><div class="sg-cell sg-pos">+$71.4K</div><div class="sg-cell sg-pos">+$165K</div><div class="sg-cell sg-lbl">$5M/yr</div><div class="sg-cell sg-neg">($30.1K)</div><div class="sg-cell sg-pos">+$13.2K</div><div class="sg-cell sg-pos sg-hl">+$97.4K</div><div class="sg-cell sg-pos">+$179K</div><div class="sg-cell sg-pos">+$295K</div><div class="sg-cell sg-lbl">$6M/yr</div><div class="sg-cell sg-pos">+$35.3K</div><div class="sg-cell sg-pos">+$87.3K</div><div class="sg-cell sg-pos sg-hl">+$188K</div><div class="sg-cell sg-pos">+$286K</div><div class="sg-cell sg-pos">+$425K</div><div class="sg-cell sg-lbl">$8M/yr</div><div class="sg-cell sg-pos">+$166K</div><div class="sg-cell sg-pos">+$235K</div><div class="sg-cell sg-pos sg-hl">+$370K</div><div class="sg-cell sg-pos">+$500K</div><div class="sg-cell sg-pos">+$686K</div><div class="sg-cell sg-lbl">$10M/yr</div><div class="sg-cell sg-pos">+$297K</div><div class="sg-cell sg-pos">+$384K</div><div class="sg-cell sg-pos sg-hl">+$552K</div><div class="sg-cell sg-pos">+$714K</div><div class="sg-cell sg-pos">+$947K</div></div>
+
+  </div><!-- end results -->
+</div><!-- end layout -->
+
+<script>
+// ── MONTH METADATA ────────────────────────────────────────────────
+const MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const MONTHS=[];
+let _yr=2026,_mo=7;
+for(let i=1;i<=60;i++){
+  MONTHS.push({idx:i,label:`${MN[_mo-1]} ${_yr}`});
+  _mo++; if(_mo>12){_mo=1;_yr++;}
+}
+const YR_DEFS=[
+  {yr:1,s:1, e:6, label:"Year 1",dates:"Jul–Dec 2026"},
+  {yr:2,s:7, e:18,label:"Year 2",dates:"Jan–Dec 2027"},
+  {yr:3,s:19,e:30,label:"Year 3",dates:"Jan–Dec 2028"},
+  {yr:4,s:31,e:42,label:"Year 4",dates:"Jan–Dec 2029"},
+  {yr:5,s:43,e:54,label:"Year 5",dates:"Jan–Dec 2030"},
+  {yr:6,s:55,e:60,label:"Year 6",dates:"Jan–Jun 2031"},
+];
+
+// ── SCENARIO PRESETS ─────────────────────────────────────────────
+const PRESETS={
+  base:  {y1revMo:[500000,500000,500000,500000,500000,500000], y2rev:6000000, r2mo:15},
+  cons:  {y1revMo:[416667,416667,416667,416667,416667,416667], y2rev:5000000, r2mo:18},
+  upside:{y1revMo:[500000,500000,500000,500000,500000,500000], y2rev:8000000, r2mo:13},
+};
+let scenario='base';
+
+// Year 1 month labels (Jul–Dec 2026)
+const Y1_LABELS = ['Jul 2026','Aug 2026','Sep 2026','Oct 2026','Nov 2026','Dec 2026'];
+
+// ── MODEL STATE ──────────────────────────────────────────────────
+let P={
+  markup:10, invest:100000, sp:20000,
+  opbase:120000, opceil:150000, loaded:false, burden:12,
+  y1revMo:[500000,500000,500000,500000,500000,500000],  // 6 individual months
+  y2rev:6000000,
+  extprofit:0,     // annual net profit from external jobs (straight to bottom line)
+  extstart:1,      // month external profit starts
+  extramp:false,   // ramp up over 12 months
+  r2amt:1000000, r2mo:15,
+  swburn:4000,
+  pmmo:0, pmsal:85000,
+  esttrig:200000, estsal:60000,
+  warnth:60000, distpct:10,
+  vic:20000, marcus:18000,
+  tech:3000, copper:1080, jobber:1200, claude_ai:1200,
+  office:7800, ins:13120, field:15800, prof:7000, mktg:192,
+};
+
+// ── COMPUTE ──────────────────────────────────────────────────────
+function calcOverhead(p){
+  const opAnn = p.opbase*2*(1+p.burden/100);
+  const opLoaded = p.opceil*2*(1+p.burden/100);
+  const baseOH = (p.loaded?opLoaded:opAnn)
+    +p.vic+p.marcus+p.tech+p.copper+p.jobber+p.claude_ai
+    +p.office+p.ins+p.field+p.prof+p.mktg;
+  return {baseOH, ohMo:baseOH/12};
+}
+
+function extProfitMo(p, mo){
+  // Returns net external profit for this month
+  if(p.extprofit<=0) return 0;
+  if(mo < p.extstart) return 0;
+  const mosSinceStart = mo - p.extstart;
+  if(p.extramp){
+    const ramp = Math.min(mosSinceStart/12, 1);
+    return (p.extprofit/12)*ramp;
+  }
+  return p.extprofit/12;
+}
+
+function runModel(p){
+  const markup=p.markup/100;
+  const effMargin=markup/(1+markup);
+  const {baseOH,ohMo}=calcOverhead(p);
+  const openCash=p.invest+p.sp;
+  const brd=1+p.burden/100;
+
+  let cash=openCash, cumNOI=0, estActive=false;
+  const months=[];
+
+  for(let i=0;i<60;i++){
+    const mo=i+1;
+    const ganmiRev = mo<=6 ? p.y1revMo[mo-1] : p.y2rev/12;
+    const gp = ganmiRev*effMargin;
+    const ext = extProfitMo(p,mo);  // already net profit
+
+    let oh=ohMo;
+    let pmCost=0;
+    if(p.pmmo>0&&mo>=p.pmmo){ pmCost=p.pmsal*brd/12; oh+=pmCost; }
+    let estCost=0;
+    if(estActive){ estCost=p.estsal*brd/12; oh+=estCost; }
+    const sw=mo>=p.r2mo&&p.r2mo>0 ? p.swburn : 0;
+    oh+=sw;
+
+    const opNOI = gp + ext - oh;   // external profit adds directly to NOI
+    const r2 = mo===p.r2mo ? p.r2amt : 0;
+
+    let dist=0;
+    if(mo%3===0&&opNOI>0&&cumNOI>0) dist=opNOI*(p.distpct/100);
+
+    const netCF=opNOI+r2-dist;
+    cash+=netCF; cumNOI+=opNOI;
+
+    if(!estActive&&opNOI*12>=p.esttrig) estActive=true;
+
+    months.push({mo,ganmiRev,gp,ext,oh:oh-pmCost-estCost-sw,
+                  pmCost,estCost,sw,opNOI,r2,dist,netCF,
+                  cash,cumNOI,warn:cash<p.warnth,estActive});
+  }
+  return {months,effMargin,baseOH,ohMo,openCash};
+}
+
+// ── FORMATTERS ───────────────────────────────────────────────────
+const ff=n=>{
+  const abs=Math.abs(n),neg=n<0;
+  let s;
+  if(abs>=1000000)      s='$'+(abs/1000000).toFixed(2)+'M';
+  else if(abs>=100000)  s='$'+(abs/1000).toFixed(0)+'K';
+  else if(abs>=1000)    s='$'+(abs/1000).toFixed(1)+'K';
+  else                  s='$'+abs.toFixed(0);
+  return neg?`(${s})`:s;
+};
+const ffull=n=>n<0
+  ?`($${Math.abs(n).toLocaleString('en-US',{maximumFractionDigits:0})})`
+  :`$${n.toLocaleString('en-US',{maximumFractionDigits:0})}`;
+const cc=n=>n>0?'pos':n<0?'neg':'neu';
+
+// ── RENDER ───────────────────────────────────────────────────────
+function render(){
+  const {months,effMargin,baseOH,ohMo,openCash}=runModel(P);
+  const markup=P.markup/100;
+  const breakeven=baseOH/effMargin;
+  const annGanmi=P.y2rev;
+
+  const y1NOI=months.slice(0,6).reduce((s,m)=>s+m.opNOI,0);
+  const y1Cash=months[5].cash;
+  const cum60=months[59].cumNOI;
+  const endCash=months[59].cash;
+  const warns=months.filter(m=>m.warn).length;
+  const ext5yr=months.reduce((s,m)=>s+m.ext,0);
+
+  // Ganmi-only model for lift comparison
+  const pNoExt={...P,extprofit:0};
+  const noExtCum=runModel(pNoExt).months[59].cumNOI;
+  const extLift=cum60-noExtCum;
+
+  // KPIs
+  setKPI('kpi-be', ff(breakeven), 'gold', annGanmi>=breakeven);
+  setKPI('kpi-y1noi', ffull(y1NOI), cc(y1NOI));
+  setKPI('kpi-y1cash', ffull(y1Cash), cc(y1Cash-P.warnth));
+  setKPI('kpi-5ynoi', ffull(cum60), cc(cum60));
+  setKPI('kpi-endcash', ffull(endCash), cc(endCash-P.warnth));
+  setKPI('kpi-warns', warns===0?'✓ None':`${warns} months`, warns===0?'pos':'neg');
+
+  // External impact strip
+  const hasExt=P.extprofit>0;
+  document.getElementById('ext-impact').style.display=hasExt?'grid':'none';
+  if(hasExt){
+    document.getElementById('ei-annual').textContent=ffull(P.extprofit);
+    document.getElementById('ei-5yr').textContent=ffull(ext5yr);
+    document.getElementById('ei-lift').textContent=(extLift>=0?'+':'')+ffull(extLift);
+  }
+
+  // Breakeven
+  document.getElementById('be-val').textContent=ffull(breakeven);
+  document.getElementById('be-vol').textContent=ffull(annGanmi)+'/yr';
+  document.getElementById('be-icon').textContent=annGanmi>=breakeven?'✅':'⚠️';
+
+  // ── Year table: expandable rows ──────────────────────────────────
+  const tbl = document.getElementById('yr-table');
+  // Save which years are open before clearing
+  const openYrs = new Set(
+    [...tbl.querySelectorAll('.yr-row.open')].map(r => r.dataset.yr)
+  );
+  // Remove all existing tbodies (leaves thead intact)
+  [...tbl.tBodies].forEach(tb => tbl.removeChild(tb));
+
+  let tRev=0, tGP=0, tExt=0, tOH=0, tNOI=0, tR2=0;
+
+  YR_DEFS.forEach(yd => {
+    const sl  = months.slice(yd.s-1, yd.e);
+    const rev = sl.reduce((s,m) => s + m.ganmiRev, 0);
+    const gp  = sl.reduce((s,m) => s + m.gp, 0);
+    const ext = sl.reduce((s,m) => s + m.ext, 0);
+    const oh  = sl.reduce((s,m) => s + m.oh + m.pmCost + m.estCost + m.sw, 0);
+    const noi = sl.reduce((s,m) => s + m.opNOI, 0);
+    const r2  = sl.reduce((s,m) => s + m.r2, 0);
+    const ec  = sl[sl.length-1].cash;
+    tRev+=rev; tGP+=gp; tExt+=ext; tOH+=oh; tNOI+=noi; tR2+=r2;
+
+    const key    = String(yd.yr);
+    const isOpen = openYrs.has(key);
+
+    // Summary tbody — one clickable row
+    const sumTb = document.createElement('tbody');
+    const sumR  = document.createElement('tr');
+    sumR.className = 'yr-row' + (isOpen ? ' open' : '');
+    sumR.dataset.yr = key;
+    sumR.innerHTML = `
+      <td><i class="expand-caret">▶</i>${yd.label}
+        <span style="color:var(--muted);font-size:10px;margin-left:4px">${yd.dates}</span></td>
+      <td style="color:var(--offwhite)">${ffull(rev)}</td>
+      <td style="color:var(--green)">${ffull(gp)}</td>
+      <td style="color:${ext>0?'var(--ext)':'var(--muted)'}">${ext>0?ffull(ext):'—'}</td>
+      <td style="color:var(--red)">(${ffull(oh).replace(/[\$\(\)]/g,'')})</td>
+      <td class="${cc(noi)}" style="font-weight:600">${ffull(noi)}</td>
+      <td style="color:${r2>0?'var(--gold)':'var(--muted)'}">${r2>0?ffull(r2):'—'}</td>
+      <td class="${cc(ec-P.warnth)}" style="font-weight:600">${ffull(ec)}</td>`;
+    sumTb.appendChild(sumR);
+
+    // Monthly detail tbody — hidden until clicked
+    const moTb = document.createElement('tbody');
+    moTb.className = 'mo-group' + (isOpen ? ' open' : '');
+
+    sl.forEach(m => {
+      const moR = document.createElement('tr');
+      const dotClr = m.warn ? 'var(--red)' : m.r2>0 ? 'var(--gold)' : m.ext>0 ? 'var(--ext)' : 'rgba(255,255,255,0.25)';
+      moR.className = ['mo-row', m.warn?'warn-mo':'', m.r2>0?'r2-mo':''].filter(Boolean).join(' ');
+      const badges = [
+        m.pmCost>0  ? `<span class="mo-badge" style="color:var(--gold);background:rgba(201,168,76,0.12)">+PM</span>`  : '',
+        m.estCost>0 ? `<span class="mo-badge" style="color:var(--gold);background:rgba(201,168,76,0.12)">+EST</span>` : '',
+        m.r2>0      ? `<span class="mo-badge" style="color:var(--gold);background:rgba(201,168,76,0.15)">R2↓</span>`  : '',
+        m.sw>0      ? `<span class="mo-badge" style="color:var(--ext);background:rgba(167,139,250,0.12)">SW</span>`   : '',
+        m.warn      ? `<span class="mo-badge" style="color:var(--red);background:rgba(231,76,60,0.12)">⚠</span>`      : '',
+      ].join('');
+      moR.innerHTML = `
+        <td><span class="mo-dot" style="background:${dotClr}"></span>${MONTHS[m.mo-1].label}${badges}</td>
+        <td style="color:var(--offwhite)">${ffull(m.ganmiRev)}</td>
+        <td style="color:var(--green)">${ffull(m.gp)}</td>
+        <td style="color:${m.ext>0?'var(--ext)':'var(--muted)'}">${m.ext>0?ffull(m.ext):'—'}</td>
+        <td style="color:var(--red)">(${ffull(m.oh+m.pmCost+m.estCost+m.sw).replace(/[\$\(\)]/g,'')})</td>
+        <td class="${cc(m.opNOI)}">${ffull(m.opNOI)}</td>
+        <td style="color:${m.r2>0?'var(--gold)':'var(--muted)'}">${m.r2>0?ffull(m.r2):'—'}</td>
+        <td class="${cc(m.cash-P.warnth)}" style="font-weight:600">${ffull(m.cash)}</td>`;
+      moTb.appendChild(moR);
+    });
+
+    // Toggle on click
+    sumR.addEventListener('click', () => {
+      const now = sumR.classList.toggle('open');
+      moTb.classList.toggle('open', now);
+    });
+
+    tbl.appendChild(sumTb);
+    tbl.appendChild(moTb);
+  });
+
+  // 60-month total row
+  const totTb = document.createElement('tbody');
+  const totR  = document.createElement('tr');
+  totR.className = 'tot-row';
+  totR.innerHTML = `
+    <td style="padding-left:20px">60-Month Total</td>
+    <td>${ffull(tRev)}</td>
+    <td>${ffull(tGP)}</td>
+    <td style="color:var(--ext)">${tExt>0?ffull(tExt):'—'}</td>
+    <td>(${ffull(tOH).replace(/[\$\(\)]/g,'')})</td>
+    <td>${ffull(tNOI)}</td>
+    <td>${tR2>0?ffull(tR2):'—'}</td>
+    <td>${ffull(endCash)}</td>`;
+  totTb.appendChild(totR);
+  tbl.appendChild(totTb);
+
+  drawCashChart(months, P.warnth, P.r2mo);
+  drawNOIChart(months);
+  drawSensGrid(baseOH, markup);
+}
+
+function setKPI(id, val, cls, good){
+  const el=document.getElementById(id);
+  el.textContent=val;
+  if(typeof cls==='boolean'){
+    el.className='kpi-val '+(cls?'pos':'neg');
+  } else {
+    el.className='kpi-val '+(cls||'neu');
+  }
+}
+
+// ── CHARTS ───────────────────────────────────────────────────────
+function canvasSetup(id, h){
+  const canvas=document.getElementById(id);
+  const dpr=window.devicePixelRatio||1;
+  const W=canvas.parentElement.clientWidth-36;
+  canvas.width=W*dpr; canvas.height=h*dpr;
+  canvas.style.width=W+'px'; canvas.style.height=h+'px';
+  const ctx=canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+  return {ctx,W,H:h};
+}
+
+function drawCashChart(months, warn, r2mo){
+  const {ctx,W,H}=canvasSetup('cashChart',130);
+  const vals=months.map(m=>m.cash);
+  const minV=Math.min(0,...vals);
+  const maxV=Math.max(...vals)*1.05;
+  const range=maxV-minV||1;
+  const px=(v,_W)=>(_W===undefined?W:_W);
+  const toX=i=>(i/59)*W;
+  const toY=v=>H-((v-minV)/range)*H;
+
+  ctx.clearRect(0,0,W,H);
+
+  // Warning band
+  const warnY=toY(warn);
+  ctx.fillStyle='rgba(231,76,60,0.05)';
+  ctx.fillRect(0,warnY,W,H-warnY);
+  ctx.strokeStyle='rgba(231,76,60,0.35)';
+  ctx.setLineDash([4,4]); ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(0,warnY); ctx.lineTo(W,warnY); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Year dividers
+  [6,18,30,42,54].forEach(m=>{
+    const x=toX(m);
+    ctx.strokeStyle='rgba(255,255,255,0.06)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke();
+  });
+
+  // External profit months — subtle purple bars at bottom
+  months.forEach((m,i)=>{
+    if(m.ext>0){
+      const x=toX(i);
+      const bw=W/60;
+      ctx.fillStyle='rgba(167,139,250,0.18)';
+      ctx.fillRect(x,H-8,bw-1,8);
+    }
+  });
+
+  // Area + line
+  const pts=months.map((m,i)=>({x:toX(i),y:toY(m.cash)}));
+  const grad=ctx.createLinearGradient(0,0,0,H);
+  grad.addColorStop(0,'rgba(46,204,113,0.25)');
+  grad.addColorStop(1,'rgba(46,204,113,0.01)');
+  ctx.fillStyle=grad;
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x,H);
+  pts.forEach(p=>ctx.lineTo(p.x,p.y));
+  ctx.lineTo(pts[59].x,H); ctx.closePath(); ctx.fill();
+
+  ctx.strokeStyle='#2ECC71'; ctx.lineWidth=1.5;
+  ctx.beginPath();
+  pts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));
+  ctx.stroke();
+
+  // Warning dots
+  months.forEach((m,i)=>{
+    if(m.warn){
+      ctx.fillStyle='var(--red)';
+      ctx.beginPath(); ctx.arc(pts[i].x,pts[i].y,3,0,Math.PI*2); ctx.fill();
+    }
+  });
+
+  // Round 2 marker
+  if(r2mo>=1&&r2mo<=60){
+    const x=toX(r2mo-1);
+    ctx.strokeStyle='#C9A84C'; ctx.lineWidth=1;
+    ctx.setLineDash([3,3]);
+    ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#C9A84C'; ctx.font='bold 9px Inter';
+    ctx.textAlign='left'; ctx.fillText('R2',x+3,11);
+  }
+
+  // Labels
+  ctx.fillStyle='var(--muted)'; ctx.font='10px Inter';
+  ctx.textAlign='left'; ctx.fillText(ffull(maxV),2,11);
+  ctx.fillText(ffull(warn)+' threshold',2,warnY-4);
+  ctx.textAlign='right'; ctx.fillText('Jun 2031',W-2,H-3);
+}
+
+function drawNOIChart(months){
+  const {ctx,W,H}=canvasSetup('noiChart',100);
+  const vals=months.map(m=>m.opNOI);
+  const minV=Math.min(0,...vals);
+  const maxV=Math.max(0,...vals)||1;
+  const range=(maxV-minV)||1;
+  const zeroY=H-((0-minV)/range)*H;
+  const bw=W/60-1;
+
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle='rgba(255,255,255,0.12)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(0,zeroY); ctx.lineTo(W,zeroY); ctx.stroke();
+
+  months.forEach((m,i)=>{
+    const x=i*(W/60)+0.5;
+    // Ganmi portion
+    const ganmiNOI=m.gp-(m.oh+m.pmCost+m.estCost+m.sw);
+    const extNOI=m.ext;
+    const totalNOI=m.opNOI;
+
+    if(totalNOI>=0){
+      // Draw ganmi portion (green)
+      const ganmiH=(Math.min(ganmiNOI,totalNOI)/range)*H;
+      const ganmiY=zeroY-Math.max(ganmiH,0);
+      ctx.fillStyle='rgba(46,204,113,0.65)';
+      ctx.fillRect(x,ganmiY,bw,Math.max(ganmiH,0));
+      // Draw ext portion on top (purple)
+      if(extNOI>0){
+        const extH=(extNOI/range)*H;
+        ctx.fillStyle='rgba(167,139,250,0.75)';
+        ctx.fillRect(x,ganmiY-extH,bw,extH);
+      }
+    } else {
+      // Loss bar (red)
+      const lossH=(Math.abs(totalNOI)/range)*H;
+      ctx.fillStyle='rgba(231,76,60,0.6)';
+      ctx.fillRect(x,zeroY,bw,lossH);
+    }
+  });
+
+  ctx.fillStyle='var(--muted)'; ctx.font='10px Inter';
+  ctx.textAlign='left';
+  ctx.fillText(ffull(maxV),2,11);
+  if(minV<0) ctx.fillText(ffull(minV),2,H-3);
+}
+
+function drawSensGrid(baseOH, curMarkup){
+  const mups=[0.07,0.08,0.10,0.12,0.15];
+  const vols=[3000000,4000000,5000000,6000000,8000000,10000000];
+  const grid=document.getElementById('sens-grid');
+  grid.style.gridTemplateColumns=`auto repeat(${mups.length},1fr)`;
+  grid.innerHTML='';
+
+  const h0=document.createElement('div');
+  h0.className='sg-cell sg-hdr'; h0.textContent='Vol / Markup →';
+  grid.appendChild(h0);
+  mups.forEach(m=>{
+    const d=document.createElement('div');
+    const hl=Math.abs(m-curMarkup)<0.001;
+    d.className='sg-cell sg-hdr'+(hl?' sg-hl':'');
+    d.textContent=(m*100).toFixed(0)+'%';
+    grid.appendChild(d);
+  });
+  vols.forEach(v=>{
+    const lbl=document.createElement('div');
+    lbl.className='sg-cell sg-lbl';
+    lbl.textContent=v>=1000000?`$${(v/1000000).toFixed(0)}M/yr`:`$${(v/1000).toFixed(0)}K`;
+    grid.appendChild(lbl);
+    mups.forEach(m=>{
+      const eff=m/(1+m);
+      const noi=v*eff-baseOH;
+      const d=document.createElement('div');
+      const hl=Math.abs(m-curMarkup)<0.001;
+      d.className='sg-cell '+(noi>=0?'sg-pos':'sg-neg')+(hl?' sg-hl':'');
+      d.textContent=noi>=0?'+'+ff(noi):ff(noi);
+      grid.appendChild(d);
+    });
+  });
+}
+
+// ── CONTROLS ─────────────────────────────────────────────────────
+function upd(key,val){
+  const v=key==='loaded'||key==='extramp'?val:parseFloat(val);
+  switch(key){
+    case 'markup':
+      P.markup=v;
+      document.getElementById('v-markup').textContent=v.toFixed(1)+'%'; break;
+    case 'invest':
+      P.invest=v;
+      document.getElementById('v-invest').textContent=ffull(v); break;
+    case 'sp':
+      P.sp=v;
+      document.getElementById('v-sp').textContent=ffull(v); break;
+    case 'opbase':
+      P.opbase=v;
+      document.getElementById('v-opbase').textContent=ffull(v); break;
+    case 'loaded':
+      P.loaded=v; break;
+    case 'burden':
+      P.burden=v;
+      document.getElementById('v-burden').textContent=v.toFixed(1)+'%'; break;
+    case 'y1mo':
+      // val is {idx, amount}
+      P.y1revMo[val.idx]=val.amount;
+      updateY1Total();
+      break;
+    case 'y2rev':
+      P.y2rev=v;
+      document.getElementById('v-y2rev').textContent=ffull(v);
+      updateResSub(); break;
+    case 'extprofit':
+      P.extprofit=v;
+      document.getElementById('v-extprofit').textContent=v===0?'$0':ffull(v)+'/yr'; break;
+    case 'extstart':
+      P.extstart=v;
+      document.getElementById('v-extstart').textContent='Month '+v; break;
+    case 'extramp':
+      P.extramp=v; break;
+    case 'r2amt':
+      P.r2amt=v;
+      document.getElementById('v-r2amt').textContent=ffull(v); break;
+    case 'r2mo':
+      P.r2mo=v;
+      document.getElementById('v-r2mo').textContent='Month '+v;
+      updateResSub(); break;
+    case 'swburn':
+      P.swburn=v;
+      document.getElementById('v-swburn').textContent=ffull(v); break;
+    case 'pmmo':
+      P.pmmo=v;
+      document.getElementById('v-pmmo').textContent=v===0?'Off':'Month '+v; break;
+    case 'pmsal':
+      P.pmsal=v;
+      document.getElementById('v-pmsal').textContent=ffull(v); break;
+    case 'esttrig':
+      P.esttrig=v;
+      document.getElementById('v-esttrig').textContent=ffull(v); break;
+    case 'estsal':
+      P.estsal=v;
+      document.getElementById('v-estsal').textContent=ffull(v); break;
+    case 'warnth':
+      P.warnth=v;
+      document.getElementById('v-warnth').textContent=ffull(v); break;
+    case 'distpct':
+      P.distpct=v;
+      document.getElementById('v-distpct').textContent=v.toFixed(1)+'%'; break;
+    case 'vic':
+      P.vic=v;
+      document.getElementById('v-vic').textContent=ffull(v); break;
+    case 'office':
+      P.office=v;
+      document.getElementById('v-office').textContent=ffull(v); break;
+  }
+  render();
+}
+
+function updateResSub(){
+  const sc={base:'Base',cons:'Conservative',upside:'Upside'}[scenario];
+  const y1total=P.y1revMo.reduce((a,b)=>a+b,0);
+  const y1m=(y1total/1e6).toFixed(2).replace(/\.?0+$/,'');
+  const y2m=(P.y2rev/1e6).toFixed(0);
+  document.getElementById('res-sub').textContent=
+    `$${y1m}M Y1 total · $${y2m}M/yr Ganmi · Round 2 Month ${P.r2mo}`;
+}
+
+function setScenario(sc,btn){
+  scenario=sc;
+  document.querySelectorAll('.sc-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  const pr=PRESETS[sc];
+  P.y1revMo=[...pr.y1revMo]; P.y2rev=pr.y2rev; P.r2mo=pr.r2mo;
+  // Sync Y1 month inputs
+  pr.y1revMo.forEach((v,i)=>{
+    const inp=document.getElementById('y1mo-'+i);
+    if(inp) inp.value=v;
+  });
+  updateY1Total();
+  // Sync quick-set slider to first month value (approximate)
+  const quickVal=pr.y1revMo[0];
+  const qs=document.getElementById('s-y1quick');
+  if(qs){ qs.value=quickVal; document.getElementById('v-y1quick').textContent=ff(quickVal)+'/mo'; }
+  document.getElementById('s-y2rev').value=P.y2rev;
+  document.getElementById('v-y2rev').textContent=ffull(P.y2rev);
+  document.getElementById('s-r2mo').value=P.r2mo;
+  document.getElementById('v-r2mo').textContent='Month '+P.r2mo;
+  const names={base:'Base Case',cons:'Conservative Case',upside:'Upside Case'};
+  const bclass={base:'base',cons:'cons',upside:'upsi'};
+  document.getElementById('res-title').textContent=names[sc]+' Projections';
+  document.getElementById('sc-badge').textContent=sc.toUpperCase();
+  document.getElementById('sc-badge').className='badge '+bclass[sc];
+  updateResSub();
+  render();
+}
+
+// ── Y1 MONTHLY REVENUE GRID ──────────────────────────────────────
+function buildY1Grid(){
+  const grid=document.getElementById('y1-grid');
+  if(!grid) return;
+  grid.innerHTML='';
+  Y1_LABELS.forEach((lbl,i)=>{
+    const div=document.createElement('div');
+    div.className='y1-cell';
+    div.innerHTML=`<label>${lbl}</label>
+      <input type="number" id="y1mo-${i}" min="0" max="10000000" step="10000"
+             value="${P.y1revMo[i]}"
+             oninput="setY1Month(${i},this.value)">`;
+    grid.appendChild(div);
+  });
+  updateY1Total();
+}
+
+function setY1Month(idx, rawVal){
+  const v=Math.max(0,parseInt(rawVal)||0);
+  P.y1revMo[idx]=v;
+  const inp=document.getElementById('y1mo-'+idx);
+  if(inp && inp.value !== String(v)) inp.value=v;
+  updateY1Total();
+  render();
+}
+
+function setY1Quick(rawVal){
+  const v=Math.max(0,parseInt(rawVal)||0);
+  document.getElementById('v-y1quick').textContent=ff(v)+'/mo';
+  P.y1revMo=P.y1revMo.map(()=>v);
+  Y1_LABELS.forEach((_,i)=>{
+    const inp=document.getElementById('y1mo-'+i);
+    if(inp) inp.value=v;
+  });
+  updateY1Total();
+  render();
+}
+
+function updateY1Total(){
+  const total=P.y1revMo.reduce((a,b)=>a+b,0);
+  const el=document.getElementById('y1-total');
+  if(el) el.textContent=ffull(total);
+}
+
+// ── DOWNLOAD ─────────────────────────────────────────────────────
+function downloadHTML(){
+  const blob=new Blob([document.documentElement.outerHTML],{type:'text/html'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='GANMI_DEVTECH_ProForma_Interactive.html';
+  a.click();
+}
+
+// ── INIT ─────────────────────────────────────────────────────────
+window.addEventListener('load',()=>{ buildY1Grid(); render(); });
+window.addEventListener('resize',render);
+</script>
+
+
+</body></html>
